@@ -28,19 +28,24 @@ User has a sports session management app ("Lineup") hosted at lineup-sports.in w
 - [x] Refresh functionality
 - [x] Logout
 
+## Iteration 2 Features (March 8, 2026)
+- [x] Date range filters for all analytics (presets: Today, Last 7 Days, Last 30 Days, This Month, All Time + custom range)
+- [x] CSV export for Users, Sessions, and Participants data (with date filter support)
+- [x] Responsive mobile sidebar with hamburger menu toggle
+
 ## What's Been Implemented (March 8, 2026)
 - Full standalone admin dashboard with all above features
 - Real-time data from production PostgreSQL database
 - Dark theme with Barlow Condensed headings, glass-morphism panels, tactical grid background
 - Admin credentials: admin@lineup-sports.in / LineupAdmin2026!
+- Click-outside detection for dropdowns (useRef pattern)
+- Mobile-first responsive design with proper stacking contexts
 
 ## Testing
-- 100% backend pass (13/13 endpoints)
-- 100% frontend pass (all components and interactions)
+- Iteration 1: 100% backend + frontend pass
+- Iteration 2: 100% backend, 95% frontend (all core flows verified)
 
 ## Backlog
-- P1: Date range filter for charts
-- P1: Export data to CSV
 - P2: Email notifications for milestones (e.g. 100 users)
 - P2: Revenue tracking (total cost from sessions)
-- P3: Mobile responsive sidebar (hamburger menu)
+- P3: Comparative period analytics (week-over-week growth)
