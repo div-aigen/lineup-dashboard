@@ -365,6 +365,145 @@ class LineupAPITester:
         
         return False
 
+    def test_date_filtering(self):
+        """Test date range filtering on analytics endpoints"""
+        if not self.token:
+            self.log_test("Date Filtering", False, "No token available")
+            return False
+            
+        headers = {"Authorization": f"Bearer {self.token}"}
+        # Test with Last 30 Days filter 
+        from datetime import date, timedelta
+        end_date = date.today().isoformat()
+        start_date = (date.today() - timedelta(days=30)).isoformat()
+        
+        params = {"start_date": start_date, "end_date": end_date}
+        
+        try:
+            # Test overview with date filter
+            url = f"{self.base_url}/analytics/overview"
+            response = requests.get(url, headers=headers, params=params, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if "total_users" in data:
+                    self.log_test("Date Filtering", True, f"Filtered overview data received for {start_date} to {end_date}")
+                    return True
+                else:
+                    self.log_test("Date Filtering", False, "Missing required fields in filtered response")
+            else:
+                self.log_test("Date Filtering", False, f"Status {response.status_code}")
+        except Exception as e:
+            self.log_test("Date Filtering", False, f"Exception: {str(e)}")
+        
+        return False
+
+    def test_csv_export_users(self):
+        """Test CSV export for users"""
+        if not self.token:
+            self.log_test("CSV Export Users", False, "No token available")
+            return False
+            
+        url = f"{self.base_url}/export/users-csv"
+        headers = {"Authorization": f"Bearer {self.token}"}
+        
+        try:
+            response = requests.get(url, headers=headers, timeout=15)
+            if response.status_code == 200:
+                # Check if response is CSV format
+                content_type = response.headers.get('Content-Type', '')
+                if 'csv' in content_type.lower() or len(response.content) > 0:
+                    self.log_test("CSV Export Users", True, f"CSV export successful, size: {len(response.content)} bytes")
+                    return True
+                else:
+                    self.log_test("CSV Export Users", False, f"Invalid content type: {content_type}")
+            else:
+                self.log_test("CSV Export Users", False, f"Status {response.status_code}")
+        except Exception as e:
+            self.log_test("CSV Export Users", False, f"Exception: {str(e)}")
+        
+        return False
+
+    def test_csv_export_sessions(self):
+        """Test CSV export for sessions"""
+        if not self.token:
+            self.log_test("CSV Export Sessions", False, "No token available")
+            return False
+            
+        url = f"{self.base_url}/export/sessions-csv"
+        headers = {"Authorization": f"Bearer {self.token}"}
+        
+        try:
+            response = requests.get(url, headers=headers, timeout=15)
+            if response.status_code == 200:
+                content_type = response.headers.get('Content-Type', '')
+                if 'csv' in content_type.lower() or len(response.content) > 0:
+                    self.log_test("CSV Export Sessions", True, f"CSV export successful, size: {len(response.content)} bytes")
+                    return True
+                else:
+                    self.log_test("CSV Export Sessions", False, f"Invalid content type: {content_type}")
+            else:
+                self.log_test("CSV Export Sessions", False, f"Status {response.status_code}")
+        except Exception as e:
+            self.log_test("CSV Export Sessions", False, f"Exception: {str(e)}")
+        
+        return False
+
+    def test_csv_export_participants(self):
+        """Test CSV export for participants"""
+        if not self.token:
+            self.log_test("CSV Export Participants", False, "No token available")
+            return False
+            
+        url = f"{self.base_url}/export/participants-csv"
+        headers = {"Authorization": f"Bearer {self.token}"}
+        
+        try:
+            response = requests.get(url, headers=headers, timeout=15)
+            if response.status_code == 200:
+                content_type = response.headers.get('Content-Type', '')
+                if 'csv' in content_type.lower() or len(response.content) > 0:
+                    self.log_test("CSV Export Participants", True, f"CSV export successful, size: {len(response.content)} bytes")
+                    return True
+                else:
+                    self.log_test("CSV Export Participants", False, f"Invalid content type: {content_type}")
+            else:
+                self.log_test("CSV Export Participants", False, f"Status {response.status_code}")
+        except Exception as e:
+            self.log_test("CSV Export Participants", False, f"Exception: {str(e)}")
+        
+        return False
+
+    def test_csv_export_with_date_filter(self):
+        """Test CSV export with date filtering"""
+        if not self.token:
+            self.log_test("CSV Export Date Filter", False, "No token available")
+            return False
+            
+        headers = {"Authorization": f"Bearer {self.token}"}
+        # Test with Last 30 Days filter
+        from datetime import date, timedelta
+        end_date = date.today().isoformat()
+        start_date = (date.today() - timedelta(days=30)).isoformat()
+        
+        params = {"start_date": start_date, "end_date": end_date}
+        
+        try:
+            url = f"{self.base_url}/export/users-csv"
+            response = requests.get(url, headers=headers, params=params, timeout=15)
+            if response.status_code == 200:
+                content_type = response.headers.get('Content-Type', '')
+                if 'csv' in content_type.lower() or len(response.content) > 0:
+                    self.log_test("CSV Export Date Filter", True, f"Filtered CSV export successful, size: {len(response.content)} bytes")
+                    return True
+                else:
+                    self.log_test("CSV Export Date Filter", False, f"Invalid content type: {content_type}")
+            else:
+                self.log_test("CSV Export Date Filter", False, f"Status {response.status_code}")
+        except Exception as e:
+            self.log_test("CSV Export Date Filter", False, f"Exception: {str(e)}")
+        
+        return False
+
     def run_all_tests(self):
         """Run all test cases"""
         print("="*60)
@@ -393,6 +532,15 @@ class LineupAPITester:
             print("\n⚙️ SETTINGS TESTS:")
             self.test_downloads_get()
             self.test_downloads_update()
+            
+            print("\n📅 DATE FILTERING TESTS:")
+            self.test_date_filtering()
+            
+            print("\n📄 CSV EXPORT TESTS:")
+            self.test_csv_export_users()
+            self.test_csv_export_sessions()
+            self.test_csv_export_participants()
+            self.test_csv_export_with_date_filter()
         else:
             print("\n⚠️ Skipping analytics tests - authentication failed")
         

@@ -10,6 +10,8 @@ import SessionStatus from "@/components/SessionStatus";
 import RecentSessions from "@/components/RecentSessions";
 import DownloadsWidget from "@/components/DownloadsWidget";
 import ParticipantsStats from "@/components/ParticipantsStats";
+import DateRangeFilter from "@/components/DateRangeFilter";
+import ExportButtons from "@/components/ExportButtons";
 import { RefreshCw } from "lucide-react";
 
 export default function Dashboard() {
@@ -19,20 +21,26 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
-  const fetchAll = useCallback(async () => {
+  const fetchAll = useCallback(async (sd, ed) => {
     const client = api();
+    const params = {};
+    if (sd) params.start_date = sd;
+    if (ed) params.end_date = ed;
     try {
       const [overview, usersGrowth, sessionsTrend, sportDist, venuePop, sessionStatus, recentSessions, participantsStats, downloads] =
         await Promise.all([
-          client.get("/analytics/overview"),
-          client.get("/analytics/users-growth"),
-          client.get("/analytics/sessions-trend"),
-          client.get("/analytics/sport-distribution"),
-          client.get("/analytics/venue-popularity"),
-          client.get("/analytics/session-status"),
-          client.get("/analytics/recent-sessions"),
-          client.get("/analytics/participants-stats"),
+          client.get("/analytics/overview", { params }),
+          client.get("/analytics/users-growth", { params }),
+          client.get("/analytics/sessions-trend", { params }),
+          client.get("/analytics/sport-distribution", { params }),
+          client.get("/analytics/venue-popularity", { params }),
+          client.get("/analytics/session-status", { params }),
+          client.get("/analytics/recent-sessions", { params }),
+          client.get("/analytics/participants-stats", { params }),
           client.get("/settings/downloads"),
         ]);
 
@@ -57,12 +65,18 @@ export default function Dashboard() {
   }, [api, logout]);
 
   useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
+    fetchAll(startDate, endDate);
+  }, [fetchAll, startDate, endDate]);
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchAll();
+    fetchAll(startDate, endDate);
+  };
+
+  const handleDateChange = (sd, ed) => {
+    setStartDate(sd);
+    setEndDate(ed);
+    setLoading(true);
   };
 
   if (loading) {
@@ -78,27 +92,35 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-brand-bg grid-bg flex" data-testid="dashboard-container">
-      <Sidebar />
-      <main className="flex-1 ml-64 p-6 md:p-8 overflow-auto">
+      <Sidebar mobileOpen={mobileOpen} onToggle={() => setMobileOpen(!mobileOpen)} />
+      <main className="flex-1 lg:ml-64 p-4 pt-16 lg:pt-6 lg:p-8 overflow-auto min-h-screen">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fade-in">
           <div>
-            <h1 className="font-heading text-3xl font-bold tracking-tight uppercase text-brand-text">
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight uppercase text-brand-text">
               Dashboard
             </h1>
             <p className="text-brand-muted text-sm mt-1">
               {lastRefresh && `Last updated: ${lastRefresh.toLocaleTimeString()}`}
             </p>
           </div>
-          <button
-            data-testid="refresh-btn"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="inline-flex items-center gap-2 bg-brand-surface border border-slate-700 rounded-sm px-4 py-2 text-slate-300 hover:bg-brand-surface-hi hover:text-white transition-colors text-sm"
-          >
-            <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
-            Refresh
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <DateRangeFilter
+              startDate={startDate}
+              endDate={endDate}
+              onChange={handleDateChange}
+            />
+            <ExportButtons startDate={startDate} endDate={endDate} />
+            <button
+              data-testid="refresh-btn"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="inline-flex items-center gap-2 bg-brand-surface border border-slate-700 rounded-sm px-3 py-2 text-slate-300 hover:bg-brand-surface-hi hover:text-white transition-colors text-sm"
+            >
+              <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+              <span className="hidden sm:inline">Refresh</span>
+            </button>
+          </div>
         </div>
 
         {/* KPI Cards */}
@@ -119,7 +141,7 @@ export default function Dashboard() {
 
         {/* Downloads + Participants */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <DownloadsWidget data={data.downloads} onUpdate={fetchAll} />
+          <DownloadsWidget data={data.downloads} onUpdate={() => fetchAll(startDate, endDate)} />
           <ParticipantsStats data={data.participantsStats} />
         </div>
 
