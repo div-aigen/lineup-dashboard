@@ -1,0 +1,119 @@
+{
+  "identity": {
+    "name": "Lineup Admin",
+    "persona": "E1 - The Anti-AI Designer",
+    "vibe": "Elite Performance, Night Match, Tactical",
+    "archetype": "The Performance Pro"
+  },
+  "typography": {
+    "primary_font": "Inter, sans-serif",
+    "heading_font": "Barlow Condensed, sans-serif",
+    "google_fonts_import": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap",
+    "rules": {
+      "headings": "font-heading font-bold tracking-tight uppercase",
+      "body": "font-sans text-slate-300",
+      "labels": "text-xs font-medium tracking-wider text-slate-500 uppercase"
+    }
+  },
+  "colors": {
+    "theme": "dark",
+    "palette": {
+      "background": "#020617",
+      "surface": "#0F172A",
+      "surface_highlight": "#1E293B",
+      "primary": "#D9F99D",
+      "primary_foreground": "#0F172A",
+      "secondary": "#3B82F6",
+      "accent": "#22D3EE",
+      "danger": "#EF4444",
+      "success": "#22C55E",
+      "text_main": "#F8FAFC",
+      "text_muted": "#94A3B8",
+      "border": "rgba(148, 163, 184, 0.1)"
+    },
+    "gradients": {
+      "primary_glow": "linear-gradient(135deg, #D9F99D 0%, #84CC16 100%)",
+      "glass_surface": "linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%)"
+    }
+  },
+  "layout_strategy": {
+    "type": "Bento Grid",
+    "grid_cols": "grid-cols-1 md:grid-cols-4 lg:grid-cols-12",
+    "spacing": {
+      "container_padding": "p-6 md:p-8",
+      "gap": "gap-6",
+      "card_padding": "p-6"
+    },
+    "z_index": {
+      "nav": 50,
+      "modal": 100,
+      "toast": 110,
+      "tooltip": 120
+    }
+  },
+  "components": {
+    "kpi_card": {
+      "style": "glass-panel",
+      "border": "border-t-2 border-primary/50",
+      "hover": "hover:bg-slate-800/50 transition-colors duration-300"
+    },
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 font-bold uppercase tracking-wide rounded-sm",
+      "secondary": "bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700 rounded-sm",
+      "ghost": "hover:bg-slate-800/50 text-slate-400 hover:text-white"
+    },
+    "charts": {
+      "background": "transparent",
+      "grid_color": "#334155",
+      "tooltip_bg": "#1E293B",
+      "tooltip_text": "#F8FAFC"
+    },
+    "tables": {
+      "header_bg": "bg-slate-900/50",
+      "row_hover": "hover:bg-slate-800/30",
+      "border_color": "border-slate-800"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-slate-950/70 border border-slate-800/50",
+    "neon_glow": "shadow-[0_0_20px_rgba(217,249,157,0.15)]",
+    "grid_pattern": "bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"
+  },
+  "image_urls": {
+    "hero_backgrounds": [
+      {
+        "url": "https://images.unsplash.com/photo-1765130729366-b54d7b2c8ea2?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Football Stadium Night"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1771909713995-d793a0c93660?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Cricket Stadium Lights"
+      }
+    ],
+    "sport_icons": [
+      {
+        "url": "https://images.unsplash.com/photo-1769859178068-499236cb9a87?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Football Match Action"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1771909712681-314d5b0ad6e5?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Cricket Match Action"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "FORCE DARK MODE: Ensure 'dark' class is applied to the html or body tag always.",
+    "ADD FONTS: Add the Google Fonts link to the index.html head.",
+    "TAILWIND CONFIG: Extend the theme with 'font-heading': ['Barlow Condensed', 'sans-serif'] and update colors to match the palette.",
+    "BACKGROUND: Use the 'grid_pattern' on the main body background to give it a technical/tactical feel.",
+    "LOGIN PAGE: Make it immersive using one of the 'hero_backgrounds' with a dark overlay.",
+    "DASHBOARD LAYOUT: Use a Sidebar + Main Content area layout. Sidebar should be 'glassmorphism'.",
+    "CHARTS: Use Recharts. Style X/YAxis to be subtle (#64748B). Use Custom Tooltips.",
+    "MANUAL DOWNLOADS: Create a special 'Widget' for the Downloads counter that looks like a digital scoreboard counter."
+  ],
+  "UNIVERSAL_GUIDELINES": {
+    "do_not_use": ["gradients on text", "rounded-full buttons (use rounded-sm or rounded-md)", "pure black (#000000) backgrounds"],
+    "must_use": ["data-testid on all interactables", "lucide-react for icons", "sonner for toasts"],
+    "accessibility": "Ensure text contrast ratios. Use text-slate-400 for secondary text on dark backgrounds."
+  }
+}
