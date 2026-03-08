@@ -17,7 +17,8 @@ export default function Sidebar({ mobileOpen, onToggle }) {
       <button
         data-testid="mobile-menu-btn"
         onClick={onToggle}
-        className="fixed top-4 left-4 z-[60] lg:hidden glass-panel rounded-sm p-2 text-slate-300 hover:text-white transition-colors"
+        className="fixed top-4 left-4 lg:hidden glass-panel rounded-sm p-2 text-slate-300 hover:text-white transition-colors"
+        style={{ zIndex: 51 }}
       >
         {mobileOpen ? <X size={22} /> : <Menu size={22} />}
       </button>
@@ -26,7 +27,8 @@ export default function Sidebar({ mobileOpen, onToggle }) {
       {mobileOpen && (
         <div
           data-testid="sidebar-overlay"
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 lg:hidden"
+          style={{ zIndex: 49 }}
           onClick={onToggle}
         />
       )}
@@ -34,9 +36,10 @@ export default function Sidebar({ mobileOpen, onToggle }) {
       {/* Sidebar */}
       <aside
         data-testid="sidebar"
-        className={`fixed left-0 top-0 h-screen w-64 glass-panel border-r border-slate-800/50 flex flex-col z-50 transition-transform duration-300 ${
+        className={`fixed left-0 top-0 h-screen w-64 glass-panel border-r border-slate-800/50 flex flex-col transition-transform duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
+        style={{ zIndex: 50 }}
       >
         {/* Brand */}
         <div className="px-6 py-6 border-b border-slate-800/50">

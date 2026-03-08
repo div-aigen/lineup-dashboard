@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Calendar, X } from "lucide-react";
 
 const PRESETS = [
@@ -13,6 +13,7 @@ export default function DateRangeFilter({ startDate, endDate, onChange }) {
   const [open, setOpen] = useState(false);
   const [localStart, setLocalStart] = useState(startDate || "");
   const [localEnd, setLocalEnd] = useState(endDate || "");
+  const ref = useRef(null);
 
   const hasFilter = startDate || endDate;
 
@@ -22,6 +23,18 @@ export default function DateRangeFilter({ startDate, endDate, onChange }) {
         return s === startDate && e === endDate;
       })?.label || "Custom"
     : "All Time";
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   const applyDates = (s, e) => {
     setLocalStart(s || "");
@@ -38,7 +51,7 @@ export default function DateRangeFilter({ startDate, endDate, onChange }) {
   };
 
   return (
-    <div className="relative" style={{ zIndex: open ? 70 : "auto" }}>
+    <div className="relative" ref={ref}>
       <button
         data-testid="date-filter-btn"
         onClick={() => setOpen(!open)}
@@ -63,72 +76,69 @@ export default function DateRangeFilter({ startDate, endDate, onChange }) {
       </button>
 
       {open && (
-        <>
-          <div className="fixed inset-0" style={{ zIndex: 60 }} onClick={() => setOpen(false)} />
-          <div
-            data-testid="date-filter-dropdown"
-            className="absolute right-0 top-full mt-2 glass-panel rounded-md p-4 w-80 border border-slate-700 shadow-xl"
-            style={{ zIndex: 71 }}
-          >
-            {/* Presets */}
-            <div className="mb-4">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">
-                Quick Select
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {PRESETS.map((preset) => {
-                  const [s, e] = preset.getDates();
-                  const isActive = s === startDate && e === endDate;
-                  return (
-                    <button
-                      key={preset.label}
-                      data-testid={`preset-${preset.label.toLowerCase().replace(/\s+/g, "-")}`}
-                      onClick={() => applyDates(s, e)}
-                      className={`text-xs px-2.5 py-1.5 rounded-sm transition-colors ${
-                        isActive
-                          ? "bg-brand-primary text-brand-primary-fg font-bold"
-                          : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
-                      }`}
-                    >
-                      {preset.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Custom range */}
-            <div className="border-t border-slate-800 pt-3">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">
-                Custom Range
-              </p>
-              <div className="flex gap-2 items-center">
-                <input
-                  data-testid="date-start-input"
-                  type="date"
-                  value={localStart}
-                  onChange={(e) => setLocalStart(e.target.value)}
-                  className="flex-1 bg-brand-surface border border-slate-700 rounded-sm px-2 py-1.5 text-xs text-brand-text focus:outline-none focus:border-brand-primary/50"
-                />
-                <span className="text-slate-600 text-xs">to</span>
-                <input
-                  data-testid="date-end-input"
-                  type="date"
-                  value={localEnd}
-                  onChange={(e) => setLocalEnd(e.target.value)}
-                  className="flex-1 bg-brand-surface border border-slate-700 rounded-sm px-2 py-1.5 text-xs text-brand-text focus:outline-none focus:border-brand-primary/50"
-                />
-              </div>
-              <button
-                data-testid="apply-custom-date-btn"
-                onClick={() => applyDates(localStart || null, localEnd || null)}
-                className="mt-2 w-full bg-brand-primary text-brand-primary-fg font-bold uppercase tracking-wide rounded-sm py-1.5 text-xs hover:bg-brand-primary/90 transition-colors"
-              >
-                Apply
-              </button>
+        <div
+          data-testid="date-filter-dropdown"
+          className="absolute right-0 top-full mt-2 glass-panel rounded-md p-4 w-80 border border-slate-700 shadow-xl"
+          style={{ zIndex: 100 }}
+        >
+          {/* Presets */}
+          <div className="mb-4">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">
+              Quick Select
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {PRESETS.map((preset) => {
+                const [s, e] = preset.getDates();
+                const isActive = s === startDate && e === endDate;
+                return (
+                  <button
+                    key={preset.label}
+                    data-testid={`preset-${preset.label.toLowerCase().replace(/\s+/g, "-")}`}
+                    onClick={() => applyDates(s, e)}
+                    className={`text-xs px-2.5 py-1.5 rounded-sm transition-colors ${
+                      isActive
+                        ? "bg-brand-primary text-brand-primary-fg font-bold"
+                        : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
-        </>
+
+          {/* Custom range */}
+          <div className="border-t border-slate-800 pt-3">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">
+              Custom Range
+            </p>
+            <div className="flex gap-2 items-center">
+              <input
+                data-testid="date-start-input"
+                type="date"
+                value={localStart}
+                onChange={(e) => setLocalStart(e.target.value)}
+                className="flex-1 bg-brand-surface border border-slate-700 rounded-sm px-2 py-1.5 text-xs text-brand-text focus:outline-none focus:border-brand-primary/50"
+              />
+              <span className="text-slate-600 text-xs">to</span>
+              <input
+                data-testid="date-end-input"
+                type="date"
+                value={localEnd}
+                onChange={(e) => setLocalEnd(e.target.value)}
+                className="flex-1 bg-brand-surface border border-slate-700 rounded-sm px-2 py-1.5 text-xs text-brand-text focus:outline-none focus:border-brand-primary/50"
+              />
+            </div>
+            <button
+              data-testid="apply-custom-date-btn"
+              onClick={() => applyDates(localStart || null, localEnd || null)}
+              className="mt-2 w-full bg-brand-primary text-brand-primary-fg font-bold uppercase tracking-wide rounded-sm py-1.5 text-xs hover:bg-brand-primary/90 transition-colors"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

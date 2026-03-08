@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useApi } from "@/App";
 import { FileDown, ChevronDown } from "lucide-react";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export default function ExportButtons({ startDate, endDate }) {
   const [open, setOpen] = useState(false);
   const [exporting, setExporting] = useState(null);
   const api = useApi();
+  const ref = useRef(null);
 
-  const buildUrl = (path) => {
-    const params = new URLSearchParams();
-    if (startDate) params.set("start_date", startDate);
-    if (endDate) params.set("end_date", endDate);
-    const qs = params.toString();
-    return `${BACKEND_URL}/api${path}${qs ? "?" + qs : ""}`;
-  };
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   const handleExport = async (type) => {
     setExporting(type);
@@ -55,7 +58,7 @@ export default function ExportButtons({ startDate, endDate }) {
   ];
 
   return (
-    <div className="relative" style={{ zIndex: open ? 70 : "auto" }}>
+    <div className="relative" ref={ref}>
       <button
         data-testid="export-btn"
         onClick={() => setOpen(!open)}
@@ -67,34 +70,31 @@ export default function ExportButtons({ startDate, endDate }) {
       </button>
 
       {open && (
-        <>
-          <div className="fixed inset-0" style={{ zIndex: 60 }} onClick={() => setOpen(false)} />
-          <div
-            data-testid="export-dropdown"
-            className="absolute right-0 top-full mt-2 glass-panel rounded-md border border-slate-700 shadow-xl overflow-hidden min-w-[180px]"
-            style={{ zIndex: 71 }}
-          >
-            {exports.map((exp) => (
-              <button
-                key={exp.key}
-                data-testid={`export-${exp.key}-btn`}
-                onClick={() => handleExport(exp.key)}
-                disabled={exporting === exp.key}
-                className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800/50 hover:text-white transition-colors flex items-center gap-2 disabled:opacity-50"
-              >
-                <FileDown size={14} className="text-slate-500" />
-                {exporting === exp.key ? "Exporting..." : `${exp.label} Data`}
-              </button>
-            ))}
-            {(startDate || endDate) && (
-              <div className="border-t border-slate-800 px-4 py-2">
-                <p className="text-[10px] text-slate-600">
-                  Filtered: {startDate || "Start"} → {endDate || "End"}
-                </p>
-              </div>
-            )}
-          </div>
-        </>
+        <div
+          data-testid="export-dropdown"
+          className="absolute right-0 top-full mt-2 glass-panel rounded-md border border-slate-700 shadow-xl overflow-hidden min-w-[180px]"
+          style={{ zIndex: 100 }}
+        >
+          {exports.map((exp) => (
+            <button
+              key={exp.key}
+              data-testid={`export-${exp.key}-btn`}
+              onClick={() => handleExport(exp.key)}
+              disabled={exporting === exp.key}
+              className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800/50 hover:text-white transition-colors flex items-center gap-2 disabled:opacity-50"
+            >
+              <FileDown size={14} className="text-slate-500" />
+              {exporting === exp.key ? "Exporting..." : `${exp.label} Data`}
+            </button>
+          ))}
+          {(startDate || endDate) && (
+            <div className="border-t border-slate-800 px-4 py-2">
+              <p className="text-[10px] text-slate-600">
+                Filtered: {startDate || "Start"} → {endDate || "End"}
+              </p>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
