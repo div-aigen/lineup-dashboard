@@ -38,7 +38,7 @@ export default function DateRangeFilter({ startDate, endDate, onChange }) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" style={{ zIndex: open ? 70 : "auto" }}>
       <button
         data-testid="date-filter-btn"
         onClick={() => setOpen(!open)}
@@ -64,10 +64,11 @@ export default function DateRangeFilter({ startDate, endDate, onChange }) {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0" style={{ zIndex: 60 }} onClick={() => setOpen(false)} />
           <div
             data-testid="date-filter-dropdown"
-            className="absolute right-0 top-full mt-2 z-50 glass-panel rounded-md p-4 w-80 border border-slate-700 shadow-xl"
+            className="absolute right-0 top-full mt-2 glass-panel rounded-md p-4 w-80 border border-slate-700 shadow-xl"
+            style={{ zIndex: 71 }}
           >
             {/* Presets */}
             <div className="mb-4">

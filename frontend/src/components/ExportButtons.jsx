@@ -55,7 +55,7 @@ export default function ExportButtons({ startDate, endDate }) {
   ];
 
   return (
-    <div className="relative">
+    <div className="relative" style={{ zIndex: open ? 70 : "auto" }}>
       <button
         data-testid="export-btn"
         onClick={() => setOpen(!open)}
@@ -68,10 +68,11 @@ export default function ExportButtons({ startDate, endDate }) {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0" style={{ zIndex: 60 }} onClick={() => setOpen(false)} />
           <div
             data-testid="export-dropdown"
-            className="absolute right-0 top-full mt-2 z-50 glass-panel rounded-md border border-slate-700 shadow-xl overflow-hidden min-w-[180px]"
+            className="absolute right-0 top-full mt-2 glass-panel rounded-md border border-slate-700 shadow-xl overflow-hidden min-w-[180px]"
+            style={{ zIndex: 71 }}
           >
             {exports.map((exp) => (
               <button
