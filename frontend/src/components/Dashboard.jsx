@@ -93,9 +93,9 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-brand-bg grid-bg flex" data-testid="dashboard-container">
       <Sidebar mobileOpen={mobileOpen} onToggle={() => setMobileOpen(!mobileOpen)} />
-      <main className="flex-1 lg:ml-64 p-4 pt-16 lg:pt-6 lg:p-8 overflow-auto min-h-screen">
+      <main className="flex-1 lg:ml-64 p-4 pt-16 lg:pt-6 lg:p-8 min-h-screen">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fade-in relative z-50">
           <div>
             <h1 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight uppercase text-brand-text">
               Dashboard
