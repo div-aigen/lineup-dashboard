@@ -1,4 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import ChartTooltip from "@/components/ChartTooltip";
+import { toPercent } from "@/lib/utils";
 
 const STATUS_COLORS = {
   open: "#22C55E",
@@ -7,17 +9,10 @@ const STATUS_COLORS = {
   full: "#F59E0B",
 };
 
-const CustomTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="bg-brand-surface-hi border border-slate-700 rounded-md px-3 py-2 text-sm">
-      <p className="text-brand-text font-medium capitalize">
-        {payload[0].name}: {payload[0].value}
-      </p>
-    </div>
-  );
-};
-
+/**
+ * @param {Object} props
+ * @param {Array<{status: string, count: number}>} props.data - Session status distribution (open, completed, cancelled, full).
+ */
 export default function SessionStatus({ data }) {
   if (!data || data.length === 0) {
     return (
@@ -58,7 +53,13 @@ export default function SessionStatus({ data }) {
               />
             ))}
           </Pie>
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={
+              <ChartTooltip
+                formatter={(entry) => `${entry.name}: ${entry.value}`}
+              />
+            }
+          />
         </PieChart>
       </ResponsiveContainer>
       <div className="flex flex-wrap gap-3 mt-2 justify-center">
@@ -69,7 +70,7 @@ export default function SessionStatus({ data }) {
               style={{ backgroundColor: STATUS_COLORS[item.status] || "#64748B" }}
             />
             <span className="text-xs text-slate-400 capitalize">
-              {item.status} ({Math.round((item.count / total) * 100)}%)
+              {item.status} ({toPercent(item.count, total)}%)
             </span>
           </div>
         ))}

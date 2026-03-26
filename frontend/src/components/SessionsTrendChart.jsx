@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   BarChart,
   Bar,
@@ -7,20 +8,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import ChartTooltip from "@/components/ChartTooltip";
+import { formatChartDate } from "@/lib/utils";
 
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="bg-brand-surface-hi border border-slate-700 rounded-md px-3 py-2 text-sm">
-      <p className="text-slate-400 text-xs mb-1">{label}</p>
-      <p className="text-brand-text font-medium">
-        {payload[0].value} sessions
-      </p>
-    </div>
-  );
-};
-
-export default function SessionsTrendChart({ data }) {
+/**
+ * @param {Object} props
+ * @param {Array<{date: string, sessions: number}>} props.data - Session count data points over time.
+ */
+function SessionsTrendChart({ data }) {
   if (!data || data.length === 0) {
     return (
       <div data-testid="sessions-trend-chart" className="glass-panel rounded-md p-6">
@@ -45,7 +40,7 @@ export default function SessionsTrendChart({ data }) {
           <XAxis
             dataKey="date"
             tick={{ fill: "#64748B", fontSize: 11 }}
-            tickFormatter={(v) => new Date(v).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+            tickFormatter={formatChartDate}
             axisLine={{ stroke: "#334155" }}
           />
           <YAxis
@@ -53,10 +48,18 @@ export default function SessionsTrendChart({ data }) {
             axisLine={{ stroke: "#334155" }}
             allowDecimals={false}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={
+              <ChartTooltip
+                formatter={(entry) => `${entry.value} sessions`}
+              />
+            }
+          />
           <Bar dataKey="sessions" fill="#22D3EE" radius={[4, 4, 0, 0]} barSize={40} />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 }
+
+export default memo(SessionsTrendChart);

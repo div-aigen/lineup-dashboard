@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { useApi } from "@/App";
 import { Download, Smartphone, Apple, Plus } from "lucide-react";
+import { settingsApi } from "@/lib/api";
+import { formatDateTime, formatShortDate } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
+/**
+ * @param {Object} props
+ * @param {Object} props.data - Downloads data with total, android, ios counts, last_updated, and history.
+ * @param {() => void} props.onUpdate - Callback to refresh dashboard data after a download count update.
+ */
 export default function DownloadsWidget({ data, onUpdate }) {
   const api = useApi();
   const [editing, setEditing] = useState(false);
@@ -15,7 +24,7 @@ export default function DownloadsWidget({ data, onUpdate }) {
     setSaving(true);
     try {
       const client = api();
-      await client.put("/settings/downloads", {
+      await settingsApi.updateDownloads(client, {
         count: Number(count),
         platform,
         note,
@@ -40,9 +49,11 @@ export default function DownloadsWidget({ data, onUpdate }) {
         <button
           data-testid="edit-downloads-btn"
           onClick={() => setEditing(!editing)}
+          aria-expanded={editing}
+          aria-label="Update download counts"
           className="inline-flex items-center gap-1.5 text-xs text-brand-primary hover:text-brand-primary/80 transition-colors uppercase tracking-wider font-medium"
         >
-          <Plus size={14} />
+          <Plus size={14} aria-hidden="true" />
           Update
         </button>
       </div>
@@ -80,7 +91,7 @@ export default function DownloadsWidget({ data, onUpdate }) {
 
       {data?.last_updated && (
         <p className="text-[10px] text-slate-600 mb-3">
-          Last updated: {new Date(data.last_updated).toLocaleString()}
+          Last updated: {formatDateTime(data.last_updated)}
         </p>
       )}
 
@@ -109,14 +120,14 @@ export default function DownloadsWidget({ data, onUpdate }) {
               <label className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
                 Count
               </label>
-              <input
+              <Input
                 data-testid="downloads-count-input"
                 type="number"
                 min="0"
                 value={count}
                 onChange={(e) => setCount(e.target.value)}
                 placeholder="e.g. 150"
-                className="w-full bg-brand-surface border border-slate-700 rounded-sm px-3 py-2 text-sm text-brand-text placeholder:text-slate-600 focus:outline-none focus:border-brand-primary/50"
+                className="bg-brand-surface border-slate-700 text-brand-text placeholder:text-slate-600 focus-visible:ring-brand-primary/50 rounded-sm"
               />
             </div>
           </div>
@@ -124,31 +135,34 @@ export default function DownloadsWidget({ data, onUpdate }) {
             <label className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
               Note (optional)
             </label>
-            <input
+            <Input
               data-testid="downloads-note-input"
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="e.g. Play Console report"
-              className="w-full bg-brand-surface border border-slate-700 rounded-sm px-3 py-2 text-sm text-brand-text placeholder:text-slate-600 focus:outline-none focus:border-brand-primary/50"
+              className="bg-brand-surface border-slate-700 text-brand-text placeholder:text-slate-600 focus-visible:ring-brand-primary/50 rounded-sm"
             />
           </div>
           <div className="flex gap-2">
-            <button
+            <Button
               data-testid="save-downloads-btn"
+              size="sm"
               onClick={handleSave}
               disabled={saving}
-              className="bg-brand-primary text-brand-primary-fg font-bold uppercase tracking-wide rounded-sm px-4 py-2 text-xs hover:bg-brand-primary/90 transition-colors disabled:opacity-50"
+              className="bg-brand-primary text-brand-primary-fg font-bold uppercase tracking-wide rounded-sm hover:bg-brand-primary/90"
             >
               {saving ? "Saving..." : "Save"}
-            </button>
-            <button
+            </Button>
+            <Button
               data-testid="cancel-downloads-btn"
+              variant="outline"
+              size="sm"
               onClick={() => setEditing(false)}
-              className="bg-slate-800 text-slate-300 rounded-sm px-4 py-2 text-xs hover:bg-slate-700 transition-colors"
+              className="bg-slate-800 text-slate-300 border-slate-700 rounded-sm hover:bg-slate-700 hover:text-white"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -163,7 +177,7 @@ export default function DownloadsWidget({ data, onUpdate }) {
             {[...data.history].reverse().slice(0, 5).map((h, i) => (
               <div key={i} className="flex items-center justify-between text-xs text-slate-500">
                 <span className="capitalize">{h.platform}: {h.count}</span>
-                <span>{new Date(h.updated_at).toLocaleDateString()}</span>
+                <span>{formatShortDate(h.updated_at)}</span>
               </div>
             ))}
           </div>
