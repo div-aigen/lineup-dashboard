@@ -49,7 +49,7 @@ export default function Login({ sessionExpired, clearSessionExpired }) {
 
     setLoading(true);
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/auth/login`, {
+      const res = await axios.post(`${BACKEND_URL}/api/dashboard/auth/login`, {
         email: email.trim(),
         password,
       });

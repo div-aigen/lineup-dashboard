@@ -38,7 +38,7 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/auth/signup`, {
+      const res = await axios.post(`${BACKEND_URL}/api/dashboard/auth/signup`, {
         email: email.trim(),
         password,
       });
