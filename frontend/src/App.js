@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 const Login = lazy(() => import("@/components/Login"));
+const Signup = lazy(() => import("@/components/Signup"));
 const Dashboard = lazy(() => import("@/components/Dashboard"));
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -37,7 +38,7 @@ function App() {
   useEffect(() => {
     if (token) {
       axios
-        .get(`${API}/auth/verify`, {
+        .get(`${API}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then(() => setLoading(false))
@@ -98,6 +99,10 @@ function App() {
               <Route
                 path="/login"
                 element={token ? <Navigate to="/" /> : <Login sessionExpired={sessionExpired} clearSessionExpired={() => setSessionExpired(false)} />}
+              />
+              <Route
+                path="/signup"
+                element={token ? <Navigate to="/" /> : <Signup />}
               />
               <Route
                 path="/*"

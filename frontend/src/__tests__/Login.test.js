@@ -11,6 +11,11 @@ jest.mock("sonner", () => ({
   toast: { success: jest.fn(), error: jest.fn() },
 }));
 
+// Mock react-router-dom
+jest.mock("react-router-dom", () => ({
+  Link: ({ children, ...props }) => <a {...props}>{children}</a>,
+}));
+
 // Mock @/App to avoid pulling in react-router-dom
 const mockLogin = jest.fn();
 jest.mock("@/App", () => {

@@ -3,6 +3,7 @@ import { useAuth } from "@/App";
 import axios from "axios";
 import { Eye, EyeOff, Zap, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -158,8 +159,11 @@ export default function Login({ sessionExpired, clearSessionExpired }) {
           </Button>
         </form>
 
-        <p className="text-center text-slate-600 text-xs mt-6">
-          Lineup Sports Admin Panel
+        <p className="text-center text-slate-500 text-sm mt-6">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-brand-primary hover:underline">
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>
