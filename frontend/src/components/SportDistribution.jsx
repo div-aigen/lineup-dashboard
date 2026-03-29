@@ -1,18 +1,13 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import ChartTooltip from "@/components/ChartTooltip";
+import { toPercent } from "@/lib/utils";
 
 const COLORS = ["#3B82F6", "#D9F99D", "#22D3EE", "#F472B6", "#F59E0B", "#8B5CF6"];
 
-const CustomTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="bg-brand-surface-hi border border-slate-700 rounded-md px-3 py-2 text-sm">
-      <p className="text-brand-text font-medium">
-        {payload[0].name}: {payload[0].value}
-      </p>
-    </div>
-  );
-};
-
+/**
+ * @param {Object} props
+ * @param {Array<{sport: string, count: number}>} props.data - Sport distribution breakdown.
+ */
 export default function SportDistribution({ data }) {
   if (!data || data.length === 0) {
     return (
@@ -50,7 +45,13 @@ export default function SportDistribution({ data }) {
               <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={
+              <ChartTooltip
+                formatter={(entry) => `${entry.name}: ${entry.value}`}
+              />
+            }
+          />
         </PieChart>
       </ResponsiveContainer>
       <div className="flex flex-wrap gap-3 mt-2 justify-center">
@@ -61,7 +62,7 @@ export default function SportDistribution({ data }) {
               style={{ backgroundColor: COLORS[idx % COLORS.length] }}
             />
             <span className="text-xs text-slate-400">
-              {item.sport} ({Math.round((item.count / total) * 100)}%)
+              {item.sport} ({toPercent(item.count, total)}%)
             </span>
           </div>
         ))}

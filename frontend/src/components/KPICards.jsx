@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Users,
   CalendarDays,
@@ -18,7 +19,12 @@ const cards = [
   { key: "verified_users", label: "Verified Users", icon: UserCheck, color: "text-emerald-400" },
 ];
 
-export default function KPICards({ overview, downloads }) {
+/**
+ * @param {Object} props
+ * @param {Object} props.overview - Analytics overview data with keys like total_users, total_sessions, etc.
+ * @param {Object} [props.downloads] - Downloads data with total, android, ios counts.
+ */
+function KPICards({ overview, downloads }) {
   if (!overview) return null;
 
   const vals = {
@@ -54,3 +60,5 @@ export default function KPICards({ overview, downloads }) {
     </div>
   );
 }
+
+export default memo(KPICards);

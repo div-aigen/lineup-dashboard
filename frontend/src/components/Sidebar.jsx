@@ -8,6 +8,11 @@ import {
   X,
 } from "lucide-react";
 
+/**
+ * @param {Object} props
+ * @param {boolean} props.mobileOpen - Whether the mobile sidebar drawer is open.
+ * @param {() => void} props.onToggle - Toggle the mobile sidebar open/closed.
+ */
 export default function Sidebar({ mobileOpen, onToggle }) {
   const { logout } = useAuth();
 
@@ -17,10 +22,12 @@ export default function Sidebar({ mobileOpen, onToggle }) {
       <button
         data-testid="mobile-menu-btn"
         onClick={onToggle}
+        aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+        aria-expanded={mobileOpen}
         className="fixed top-4 left-4 lg:hidden glass-panel rounded-sm p-2 text-slate-300 hover:text-white transition-colors"
         style={{ zIndex: 51 }}
       >
-        {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+        {mobileOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
       </button>
 
       {/* Overlay on mobile */}
@@ -30,12 +37,15 @@ export default function Sidebar({ mobileOpen, onToggle }) {
           className="fixed inset-0 bg-black/60 lg:hidden"
           style={{ zIndex: 49 }}
           onClick={onToggle}
+          aria-hidden="true"
         />
       )}
 
       {/* Sidebar */}
       <aside
         data-testid="sidebar"
+        role="navigation"
+        aria-label="Main navigation"
         className={`fixed left-0 top-0 h-screen w-64 glass-panel border-r border-slate-800/50 flex flex-col transition-transform duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
@@ -90,9 +100,10 @@ export default function Sidebar({ mobileOpen, onToggle }) {
           <button
             data-testid="logout-btn"
             onClick={logout}
+            aria-label="Sign out"
             className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-slate-500 hover:text-brand-danger hover:bg-red-500/10 transition-colors w-full"
           >
-            <LogOut size={18} />
+            <LogOut size={18} aria-hidden="true" />
             <span className="text-sm font-medium">Sign Out</span>
           </button>
         </div>

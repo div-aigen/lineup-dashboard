@@ -1,5 +1,11 @@
 import { Trophy, Users } from "lucide-react";
 
+/**
+ * @param {Object} props
+ * @param {Object} props.data - Participants stats with top_users and fill_rates arrays.
+ * @param {Array<{name: string, sessions: number}>} [props.data.top_users] - Most active players.
+ * @param {Array<{title: string, filled: number, max: number, rate: number}>} [props.data.fill_rates] - Session fill rates.
+ */
 export default function ParticipantsStats({ data }) {
   if (!data) {
     return (

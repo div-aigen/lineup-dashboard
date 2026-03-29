@@ -1,11 +1,81 @@
 import { MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatFullDate, formatCost, formatParticipants } from "@/lib/utils";
 
-const statusStyle = {
-  open: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20",
-  completed: "bg-blue-500/15 text-blue-400 border border-blue-500/20",
-  cancelled: "bg-red-500/15 text-red-400 border border-red-500/20",
-  full: "bg-amber-500/15 text-amber-400 border border-amber-500/20",
+const statusVariant = {
+  open: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/15",
+  completed: "bg-blue-500/15 text-blue-400 border-blue-500/20 hover:bg-blue-500/15",
+  cancelled: "bg-red-500/15 text-red-400 border-red-500/20 hover:bg-red-500/15",
+  full: "bg-amber-500/15 text-amber-400 border-amber-500/20 hover:bg-amber-500/15",
 };
+
+function StatusBadge({ status }) {
+  return (
+    <Badge
+      variant="outline"
+      className={`rounded-sm capitalize text-xs ${statusVariant[status] || "bg-slate-700 text-slate-400"}`}
+    >
+      {status}
+    </Badge>
+  );
+}
+
+function SessionCard({ session }) {
+  return (
+    <div
+      data-testid={`session-row-${session.id}`}
+      className="bg-brand-surface rounded-md p-4 border border-slate-800/50 space-y-3"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-sm text-brand-text font-medium leading-tight">
+          {session.title}
+        </span>
+        <StatusBadge status={session.status} />
+      </div>
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <div>
+          <span className="text-slate-500">Sport</span>
+          <p className="text-slate-300">{session.sport_type}</p>
+        </div>
+        <div>
+          <span className="text-slate-500">Date</span>
+          <p className="text-slate-300">
+            {session.scheduled_date ? formatFullDate(session.scheduled_date) : "-"}
+          </p>
+        </div>
+        <div>
+          <span className="text-slate-500">Players</span>
+          <p className="text-brand-text">
+            {formatParticipants(session.participant_count, session.max_participants)}
+          </p>
+        </div>
+        <div>
+          <span className="text-slate-500">Cost</span>
+          <p className="text-slate-300">
+            {formatCost(session.total_cost)}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center gap-1.5 text-slate-400">
+          <MapPin size={12} className="text-slate-600" />
+          <span className="truncate max-w-[140px]">
+            {session.venue_name || session.location_address || "-"}
+          </span>
+        </div>
+        <span className="text-slate-500">{session.creator_name}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function RecentSessions({ data }) {
   if (!data || data.length === 0) {
@@ -26,52 +96,61 @@ export default function RecentSessions({ data }) {
       <h3 className="font-heading text-lg font-bold uppercase tracking-tight text-brand-text mb-4">
         Recent Sessions
       </h3>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-slate-800">
-              <th className="text-[11px] text-slate-500 uppercase tracking-wider pb-3 pr-4">
+
+      {/* Mobile: Card layout */}
+      <div className="md:hidden space-y-3">
+        {data.map((session) => (
+          <SessionCard key={session.id} session={session} />
+        ))}
+      </div>
+
+      {/* Desktop: Table layout */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-slate-800 hover:bg-transparent">
+              <TableHead className="text-[11px] text-slate-500 uppercase tracking-wider">
                 Title
-              </th>
-              <th className="text-[11px] text-slate-500 uppercase tracking-wider pb-3 pr-4">
+              </TableHead>
+              <TableHead className="text-[11px] text-slate-500 uppercase tracking-wider">
                 Sport
-              </th>
-              <th className="text-[11px] text-slate-500 uppercase tracking-wider pb-3 pr-4">
+              </TableHead>
+              <TableHead className="text-[11px] text-slate-500 uppercase tracking-wider">
                 Date
-              </th>
-              <th className="text-[11px] text-slate-500 uppercase tracking-wider pb-3 pr-4">
+              </TableHead>
+              <TableHead className="text-[11px] text-slate-500 uppercase tracking-wider">
                 Venue
-              </th>
-              <th className="text-[11px] text-slate-500 uppercase tracking-wider pb-3 pr-4">
+              </TableHead>
+              <TableHead className="text-[11px] text-slate-500 uppercase tracking-wider">
                 Creator
-              </th>
-              <th className="text-[11px] text-slate-500 uppercase tracking-wider pb-3 pr-4">
+              </TableHead>
+              <TableHead className="text-[11px] text-slate-500 uppercase tracking-wider">
                 Participants
-              </th>
-              <th className="text-[11px] text-slate-500 uppercase tracking-wider pb-3 pr-4">
+              </TableHead>
+              <TableHead className="text-[11px] text-slate-500 uppercase tracking-wider">
                 Cost
-              </th>
-              <th className="text-[11px] text-slate-500 uppercase tracking-wider pb-3">
+              </TableHead>
+              <TableHead className="text-[11px] text-slate-500 uppercase tracking-wider">
                 Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data.map((session) => (
-              <tr
+              <TableRow
                 key={session.id}
                 data-testid={`session-row-${session.id}`}
-                className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                className="border-slate-800/50 hover:bg-slate-800/30"
               >
-                <td className="py-3 pr-4">
+                <TableCell>
                   <span className="text-sm text-brand-text font-medium">
                     {session.title}
                   </span>
-                </td>
-                <td className="py-3 pr-4">
+                </TableCell>
+                <TableCell>
                   <span className="text-sm text-slate-300">{session.sport_type}</span>
-                </td>
-                <td className="py-3 pr-4">
+                </TableCell>
+                <TableCell>
                   <span className="text-sm text-slate-400">
                     {session.scheduled_date
                       ? new Date(session.scheduled_date).toLocaleDateString("en-IN", {
@@ -81,39 +160,33 @@ export default function RecentSessions({ data }) {
                         })
                       : "-"}
                   </span>
-                </td>
-                <td className="py-3 pr-4">
+                </TableCell>
+                <TableCell>
                   <div className="flex items-center gap-1.5 text-sm text-slate-400">
                     <MapPin size={12} className="text-slate-600" />
                     {session.venue_name || session.location_address || "-"}
                   </div>
-                </td>
-                <td className="py-3 pr-4">
+                </TableCell>
+                <TableCell>
                   <span className="text-sm text-slate-400">{session.creator_name}</span>
-                </td>
-                <td className="py-3 pr-4">
+                </TableCell>
+                <TableCell>
                   <span className="text-sm text-brand-text">
-                    {session.participant_count}/{session.max_participants}
+                    {formatParticipants(session.participant_count, session.max_participants)}
                   </span>
-                </td>
-                <td className="py-3 pr-4">
+                </TableCell>
+                <TableCell>
                   <span className="text-sm text-slate-300">
-                    {session.total_cost > 0 ? `₹${session.total_cost}` : "Free"}
+                    {formatCost(session.total_cost)}
                   </span>
-                </td>
-                <td className="py-3">
-                  <span
-                    className={`inline-block text-xs px-2.5 py-1 rounded-sm capitalize ${
-                      statusStyle[session.status] || "bg-slate-700 text-slate-400"
-                    }`}
-                  >
-                    {session.status}
-                  </span>
-                </td>
-              </tr>
+                </TableCell>
+                <TableCell>
+                  <StatusBadge status={session.status} />
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

@@ -7,19 +7,13 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import ChartTooltip from "@/components/ChartTooltip";
+import { truncate } from "@/lib/utils";
 
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="bg-brand-surface-hi border border-slate-700 rounded-md px-3 py-2 text-sm">
-      <p className="text-slate-400 text-xs mb-1">{label}</p>
-      <p className="text-brand-text font-medium">
-        {payload[0].value} sessions held
-      </p>
-    </div>
-  );
-};
-
+/**
+ * @param {Object} props
+ * @param {Array<{venue: string, sessions: number}>} props.data - Venue popularity ranked by session count.
+ */
 export default function VenuePopularity({ data }) {
   if (!data || data.length === 0) {
     return (
@@ -37,7 +31,7 @@ export default function VenuePopularity({ data }) {
   // Shorten venue names for chart
   const chartData = data.map((d) => ({
     ...d,
-    shortName: d.venue.length > 15 ? d.venue.substring(0, 14) + "..." : d.venue,
+    shortName: truncate(d.venue),
   }));
 
   return (
@@ -61,7 +55,13 @@ export default function VenuePopularity({ data }) {
             tick={{ fill: "#94A3B8", fontSize: 11 }}
             axisLine={{ stroke: "#334155" }}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={
+              <ChartTooltip
+                formatter={(entry) => `${entry.value} sessions held`}
+              />
+            }
+          />
           <Bar dataKey="sessions" fill="#D9F99D" radius={[0, 4, 4, 0]} barSize={18} />
         </BarChart>
       </ResponsiveContainer>

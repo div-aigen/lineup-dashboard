@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   AreaChart,
   Area,
@@ -7,25 +8,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import ChartTooltip from "@/components/ChartTooltip";
+import { formatChartDate } from "@/lib/utils";
 
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="bg-brand-surface-hi border border-slate-700 rounded-md px-3 py-2 text-sm">
-      <p className="text-slate-400 text-xs mb-1">{label}</p>
-      <p className="text-brand-text font-medium">
-        {payload[0].value} total users
-      </p>
-      {payload[1] && (
-        <p className="text-brand-primary text-xs">
-          +{payload[1].value} new
-        </p>
-      )}
-    </div>
-  );
-};
-
-export default function UserGrowthChart({ data }) {
+/**
+ * @param {Object} props
+ * @param {Array<{date: string, users: number, new_users: number}>} props.data - User growth data points over time.
+ */
+function UserGrowthChart({ data }) {
   if (!data || data.length === 0) {
     return (
       <div data-testid="user-growth-chart" className="glass-panel rounded-md p-6">
@@ -56,7 +46,7 @@ export default function UserGrowthChart({ data }) {
           <XAxis
             dataKey="date"
             tick={{ fill: "#64748B", fontSize: 11 }}
-            tickFormatter={(v) => new Date(v).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+            tickFormatter={formatChartDate}
             axisLine={{ stroke: "#334155" }}
           />
           <YAxis
@@ -64,7 +54,17 @@ export default function UserGrowthChart({ data }) {
             axisLine={{ stroke: "#334155" }}
             allowDecimals={false}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={
+              <ChartTooltip
+                formatter={(entry) =>
+                  entry.dataKey === "new_users"
+                    ? `+${entry.value} new`
+                    : `${entry.value} total users`
+                }
+              />
+            }
+          />
           <Area
             type="monotone"
             dataKey="users"
@@ -85,3 +85,5 @@ export default function UserGrowthChart({ data }) {
     </div>
   );
 }
+
+export default memo(UserGrowthChart);
